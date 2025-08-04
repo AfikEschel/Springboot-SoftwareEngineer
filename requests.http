@@ -1,18 +1,63 @@
-### GET request to example server
-GET http://localhost:8080
+@baseUrl = http://localhost:8080
+@accept = application/json
 
-###
-GET http://localhost:8080/api/v1/software-engineer
+### Health
+GET {{baseUrl}}/actuator/health
+Accept: {{accept}}
 
-###
-GET http://localhost:8080/api/v1/software-engineer/2
+### List engineers
+GET {{baseUrl}}/api/v1/software-engineer
+Accept: {{accept}}
 
+### Get by ID (adjust the ID if needed)
+GET {{baseUrl}}/api/v1/software-engineer/1
+Accept: {{accept}}
 
-###
-POST http://localhost:8080/api/v1/software-engineer
+### Create engineer
+POST {{baseUrl}}/api/v1/software-engineer
+Accept: {{accept}}
 Content-Type: application/json
 
 {
   "name": "Jimmy",
   "techStack": "Qiskit"
+}
+
+> {%
+    try {
+        const body = JSON.parse(response.body);
+        if (body.id) client.global.set("engineerId", body.id);
+    } catch (e) {}
+%}
+
+### Get created engineer
+GET {{baseUrl}}/api/v1/software-engineer/{{engineerId}}
+Accept: {{accept}}
+
+### Update engineer
+PUT {{baseUrl}}/api/v1/software-engineer/{{engineerId}}
+Accept: {{accept}}
+Content-Type: application/json
+
+{
+  "name": "Jimmy Updated",
+  "techStack": "Qiskit + Spring"
+}
+
+### Delete engineer
+DELETE {{baseUrl}}/api/v1/software-engineer/{{engineerId}}
+Accept: {{accept}}
+
+### Verify deletion (expect 404 if your API returns 404)
+GET {{baseUrl}}/api/v1/software-engineer/{{engineerId}}
+Accept: {{accept}}
+
+### Negative test: invalid payload (expect 400 if validation is enabled)
+POST {{baseUrl}}/api/v1/software-engineer
+Accept: {{accept}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "techStack": "Invalid"
 }
